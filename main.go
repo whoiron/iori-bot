@@ -88,12 +88,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 func guildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	m, err := pickWelcomeMessage()
 	if err != nil {
-		fmt.Sprintln(err)
+		fmt.Println("error guildMemberAdd pickWelcomeMessage,", err)
 		return
 	}
 	_, err = s.ChannelMessageSend(WelcomeChannelID, fmt.Sprintf(m, g.User.Mention()))
 	if err != nil {
-		fmt.Sprintln(err)
+		fmt.Println("error guildMemberAdd ChannelMessageSend,", err)
 		return
 	}
 }
@@ -101,7 +101,6 @@ func guildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 func pickWelcomeMessage() (string, error) {
 	c, err := loadConfig()
 	if err != nil {
-		panic(err)
 		return "", err
 	}
 	if len(c.WelcomeMessages) == 0 {
