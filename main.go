@@ -1,14 +1,15 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
-
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -74,15 +75,28 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	// If the message is "ping" reply with "Pong!"
-	//if m.Content == "ping" {
-	//	s.ChannelMessageSend(m.ChannelID, "Pong!")
-	//}
+	res, err := pickKeywordMessage(m.Content)
+	if err != nil {
+		return
+	}
+	s.ChannelMessageSend(m.ChannelID, res)
+}
 
-	// If the message is "pong" reply with "Ping!"
-	//if m.Content == "pong" {
-	//	s.ChannelMessageSend(m.ChannelID, "Ping!")
-	//}
+func pickKeywordMessage(content string) (string, error) {
+	c, err := loadConfig()
+	if err != nil {
+		return "", err
+	}
+	if len(c.WelcomeMessages) == 0 {
+		return "", err
+	}
+
+	// check keyword and pick response
+	if len(c.Keyword.Request) > 5 && strings.Contains(content, c.Keyword.Request) {
+		rand.Seed(time.Now().Unix())
+		return c.Keyword.Response[rand.Intn(len(c.Keyword.Response))], nil
+	}
+	return "", errors.New("invalid")
 }
 
 func guildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
@@ -114,6 +128,10 @@ func pickWelcomeMessage() (string, error) {
 
 type config struct {
 	WelcomeMessages []string `yaml:"welcome"`
+	Keyword         struct {
+		Request  string   `yaml:"request"`
+		Response []string `yaml:"response"`
+	} `yaml:"keyword"`
 }
 
 func loadConfig() (c *config, err error) {

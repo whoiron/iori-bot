@@ -1,3 +1,7 @@
 welcome:
   - "Hey %s, Welcome"
   - "%sさん、ようこそ"
+keyword:
+  request: "ping"
+  response:
+    - "pong"
