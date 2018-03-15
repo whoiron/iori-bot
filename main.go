@@ -87,12 +87,9 @@ func pickKeywordMessage(content string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(c.WelcomeMessages) == 0 {
-		return "", err
-	}
 
 	// check keyword and pick response
-	if len(c.Keyword.Request) > 5 && strings.Contains(content, c.Keyword.Request) {
+	if c.Keyword.Request != "" && len(c.Keyword.Response) > 0 && strings.Contains(content, c.Keyword.Request) {
 		rand.Seed(time.Now().Unix())
 		return c.Keyword.Response[rand.Intn(len(c.Keyword.Response))], nil
 	}
