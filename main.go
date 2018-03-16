@@ -88,14 +88,14 @@ func pickKeywordMessage(content string) (string, error) {
 	}
 
 	// ignore
-	if content == "" || len(c.Keyword.Response) > 0 {
+	if content == "" || len(c.Keyword.ResponseMessages) == 0 {
 		return "", errors.New("ignore")
 	}
 
 	// check keyword and pick response
-	if c.Keyword.Request == content {
+	if c.Keyword.RequestMessage == content {
 		rand.Seed(time.Now().Unix())
-		return c.Keyword.Response[rand.Intn(len(c.Keyword.Response))], nil
+		return c.Keyword.ResponseMessages[rand.Intn(len(c.Keyword.ResponseMessages))], nil
 	}
 	return "", errors.New("invalid")
 }
@@ -130,8 +130,8 @@ func pickWelcomeMessage() (string, error) {
 type config struct {
 	WelcomeMessages []string `yaml:"welcome"`
 	Keyword         struct {
-		Request  string   `yaml:"request"`
-		Response []string `yaml:"response"`
+		RequestMessage   string   `yaml:"request"`
+		ResponseMessages []string `yaml:"response"`
 	} `yaml:"keyword"`
 }
 
