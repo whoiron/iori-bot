@@ -8,7 +8,6 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
@@ -88,8 +87,13 @@ func pickKeywordMessage(content string) (string, error) {
 		return "", err
 	}
 
+	// ignore
+	if content == "" || len(c.Keyword.Response) > 0 {
+		return "", errors.New("ignore")
+	}
+
 	// check keyword and pick response
-	if c.Keyword.Request != "" && len(c.Keyword.Response) > 0 && strings.Contains(content, c.Keyword.Request) {
+	if c.Keyword.Request == content {
 		rand.Seed(time.Now().Unix())
 		return c.Keyword.Response[rand.Intn(len(c.Keyword.Response))], nil
 	}
